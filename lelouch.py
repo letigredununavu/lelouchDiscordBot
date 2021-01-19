@@ -8,8 +8,10 @@ token = "NzU0NDU5NzE3NTYwMTcyNjA0.X11DXQ.2VcrWnJkzMadmmR8wM-KQJaEQms"
 
 client = commands.Bot(command_prefix = '>', help_command=None)
 
-mots = open("mots.txt", 'r')
+mots = open("mots.txt", 'r', encoding='utf-8')
 mots = mots.read().split('\n')
+for mot in mots:
+    print(mot)
 
 def add_users_in_leaderBoard(user, points = 0):
     try:
