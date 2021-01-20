@@ -117,7 +117,7 @@ def get_database():
         print("cursor connected")
 
         # Create the query command and execute it
-        sql_query = "select * from scores"
+        sql_query = "select * from scores order by points desc"
         cursor.execute(sql_query)
 
         database = cursor.fetchall()
@@ -392,13 +392,16 @@ async def add_user(ctx):
 async def leaderboard(ctx):
 
     database = get_database()
-    message = ""
-    
-    for i in range(len(database)):
-        message += "{} : {} avec {} points\n".format(i+1, database[i][0], database[i][1])
-    
-    if message:
-        await ctx.send(message)
+    if database:
+        message = ""
+        
+        for i in range(len(database)):
+            message += "{} : {} avec {} points\n".format(i+1, database[i][0], database[i][1])
+        
+        if message:
+            await ctx.send(message)
+    else:
+        await ctx.send("Database vide")
 
 
 # Command to clean the database
