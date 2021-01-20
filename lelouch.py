@@ -399,5 +399,5 @@ async def clean_db(ctx):
     
     else:
         await ctx.send("HAHAHAHAHA tu n'as pas ce pouvoir")
-
+print(os.environ['BOT_TOKEN'])
 client.run(os.environ['BOT_TOKEN'])
