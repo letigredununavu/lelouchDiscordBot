@@ -4,8 +4,6 @@ import os
 import random
 import sqlite3
 
-# Token of your discord bot
-token1 = "NzU0NDU5NzE3NTYwMTcyNjA0.X11DXQ.2VcrWnJkzMadmmR8wM-KQJaEQms"
 
 client = commands.Bot(command_prefix = '>', help_command=None)
 
@@ -399,7 +397,8 @@ async def clean_db(ctx):
     
     else:
         await ctx.send("HAHAHAHAHA tu n'as pas ce pouvoir")
-token2 = os.environ['BOT_TOKEN']
-print(token1)
-print(token2)
+
+        
+token = os.environ['BOT_TOKEN']
+
 client.run(token)
