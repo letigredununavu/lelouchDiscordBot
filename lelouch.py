@@ -231,25 +231,6 @@ async def start(ctx):
     await ctx.send(file=discord.File(image))
 
 
-@client.command()
-async def test_image(ctx):
-
-    await ctx.send_file('images/live0.png')
-    '''
-    file = open('images/live0.png', 'rb')
-    picture = discord.File(file)
-
-    await ctx.send(file=discord.File('images/live0.png'))
-    await ctx.send(file=discord.File('images/live1.png'))
-    await ctx.send(file=discord.File('images/live2.png'))
-    await ctx.send(file=discord.File('images/live3.png'))
-    await ctx.send(file=discord.File('images/live4.png'))
-    await ctx.send(file=discord.File('images/live5.png'))
-    await ctx.send(file=discord.File('images/live6.png'))
-    await ctx.send(file=discord.File('images/dead.png'))
-    '''
-
-
 # Command to guess a letter
 @client.command()
 async def play(ctx, *, letter):
@@ -302,7 +283,6 @@ async def play(ctx, *, letter):
                 if game.lives <= 0:
                     message += "Vous avez perdu pétasses\nLe mot était: {}\n".format(game.mot)
                     await ctx.send("Vous avez perdu pétasses\n")
-                    #await ctx.send("Le mot était: {}".format(game.mot))
 
                     game.start = False
                     return
@@ -313,20 +293,16 @@ async def play(ctx, *, letter):
             message += "lettres utilisées: {}\n".format(game.lettres_utilisees)
             message += "vies restantes: {}\n".format(game.lives)
 
-            #await ctx.send("mot: {}".format(''.join(game.mot_chiffrer)))
-            #await ctx.send("lettres utilisées: {}".format(game.lettres_utilisees))
-            #await ctx.send("vies restantes: {}".format(game.lives))
-
             # If the game is won
             if not '-' in game.mot_chiffrer:
                 message += "Congratulations!!!"
                 #await ctx.send("Congratulations!!!")
                 game.start = False
         
-        await ctx.send(message)
+            await ctx.send(message)
 
     else:
-        await ctx.send("Aucun partie est commencé connasse")
+        await ctx.send("Aucun partie n'est commencée")
 
 
 # Command to guess the entire word
@@ -351,14 +327,23 @@ async def guess(ctx, *, word):
         points = get_minus_points_with_word()
         add_points_to_user(user, points)
 
-        message += "No, better luck next time\n"
-        message += "mot: {}\n".format(''.join(game.mot_chiffrer))
-        message += "lettres utilisées: {}\n".format(game.lettres_utilisees)
-        message += "vies restantes: {}".format(game.lives)
-        
-        #await ctx.send("No, better luck next time")
-        
         game.lives -= 1
+
+        # If they have lost
+        if game.lives <= 0:
+            message += "Vous avez perdu pétasses\nLe mot était: {}\n".format(game.mot)
+
+            game.start = False
+
+        else:
+            message += "No, better luck next time\n"
+            message += "mot: {}\n".format(''.join(game.mot_chiffrer))
+            message += "lettres utilisées: {}\n".format(game.lettres_utilisees)
+            message += "vies restantes: {}".format(game.lives)
+        
+        await ctx.send(message)
+        
+        
 
 
 # The help command
