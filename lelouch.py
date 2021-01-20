@@ -400,5 +400,6 @@ async def clean_db(ctx):
     else:
         await ctx.send("HAHAHAHAHA tu n'as pas ce pouvoir")
 token2 = os.environ['BOT_TOKEN']
-print(token1 == token2)
+print(token1)
+print(token2)
 client.run(token)
