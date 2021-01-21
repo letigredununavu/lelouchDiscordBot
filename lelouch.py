@@ -3,7 +3,7 @@ from discord.ext import commands
 import os
 import random
 import sqlite3
-
+import dbControl as db
 
 client = commands.Bot(command_prefix = '>', help_command=None)
 
@@ -29,132 +29,6 @@ def get_image(lives):
         return 'images/live6.png'
     else:
         return 'images/dead.png'
-
-# Function to add a user to the database
-def add_users_in_leaderBoard(user, points = 0):
-
-    try:
-        # Connect to database
-        connection = sqlite3.connect('hangMan.db')
-        cursor = connection.cursor()
-        print("cursor connected")
-
-        # Verify that the user is not already in the database
-        cursor.execute("select * from scores where name=?", (user,))
-
-        if not cursor.fetchone():
-        
-            # Create the query command pass it to the cursor with the user argument and initial 0 points
-            sql_query = "insert into scores values (?,?)"
-            cursor.execute(sql_query, (user, points))
-
-        # Commit the changes
-        connection.commit()
-
-        print("modifs enregistrés")
-
-        cursor.close()
-
-    except sqlite3.Error as error:
-        print("error dans l'ajout")
-
-    # Close the connection
-    finally:
-        if (connection):
-            connection.close()
-            print("connection fini")
-
-
-# Function to add points to a user
-def add_points_to_user(user, points_to_add):
-
-    try:
-        # Connect to the database
-        connection = sqlite3.connect('hangMan.db')
-        cursor = connection.cursor()
-        print("cursor connected")
-
-        # Create the query command and execute it with the cursor
-        sql_query = "select * from scores where name=? "
-        cursor.execute(sql_query, (user,))
-
-        player = cursor.fetchone()
-
-        # Verify that the player exist
-        if player:
-            new_points = player[1] + points_to_add
-            print("new points = {}".format(new_points))
-            sql_query = "update scores set points=? where name=?"
-            cursor.execute(sql_query, (new_points, user))
-        
-        # If the player does not exist, create it
-        else:
-            add_users_in_leaderBoard(user, points_to_add)
-            print("new player created with {} points".format(points_to_add))
-
-        print("update successful")
-        connection.commit()
-        cursor.close()
-
-    except expression as identifier:
-        print("error dans l'ajout des points")
-
-    finally:
-        if (connection):
-            connection.close()
-            print("connection fini")
-
-
-# Function to get the entire database
-def get_database():
-
-    try:
-        # Connect to database
-        connection = sqlite3.connect('hangMan.db')
-        cursor = connection.cursor()
-        print("cursor connected")
-
-        # Create the query command and execute it
-        sql_query = "select * from scores order by points desc"
-        cursor.execute(sql_query)
-
-        database = cursor.fetchall()
-
-        cursor.close()
-
-    except sqlite3.Error as error:
-        print("error dans le show_data")
-
-    finally:
-        if (connection):
-            connection.close()
-            print("connection fini")
-
-        return database
-
-
-# Function to erase all database
-def clean_database():
-
-    try:
-        connection = sqlite3.connect('hangMan.db')
-        cursor = connection.cursor()
-        print("cursor connected")
-
-        sql_query = "delete from scores"
-        cursor.execute(sql_query)
-        connection.commit()
-
-        cursor.close()
-
-    except sqlite3.Error as error:
-        print("erreur dans la suppresion de la db")
-
-    finally:
-        if (connection):
-            connection.close()
-            print("connection fini")
-
 
 # The class that represent our game
 class Game():
@@ -258,7 +132,7 @@ async def play(ctx, *, letter):
 
                 # Get the points to add to the user and adding them
                 points = get_adding_points_with_letter()
-                add_points_to_user(user, points)
+                db.add_points_to_user(user, points)
 
                 for i in range(len(game.mot)):
                     if letter == game.mot[i]:
@@ -269,7 +143,7 @@ async def play(ctx, *, letter):
 
                 # Get the points the remove to the user and remove them
                 points = get_minus_points_with_letter()
-                add_points_to_user(user, points)
+                db.add_points_to_user(user, points)
 
                 game.lives -= 1
 
@@ -314,7 +188,7 @@ async def guess(ctx, *, word):
         await ctx.send("Bravooo! {}, le mot était bien: {}".format(user, game.mot))
 
         points = get_adding_points_with_word()
-        add_points_to_user(user, points)
+        db.add_points_to_user(user, points)
 
         game.start = False
     
@@ -323,7 +197,7 @@ async def guess(ctx, *, word):
         message = ""
 
         points = get_minus_points_with_word()
-        add_points_to_user(user, points)
+        db.add_points_to_user(user, points)
 
         game.lives -= 1
 
@@ -367,14 +241,14 @@ async def help(ctx):
 async def add_user(ctx):
 
     user = ctx.author.name
-    add_users_in_leaderBoard(user)
+    db.add_users_in_leaderBoard(user)
 
 
 # The command to show the database
 @client.command()
 async def leaderboard(ctx):
 
-    database = get_database()
+    database = db.get_database()
     if database:
         message = ""
         
@@ -393,7 +267,7 @@ async def clean_db(ctx):
 
     if ctx.author.name == 'tonythelion':
         await ctx.send("Database cleané")
-        clean_database()
+        db.clean_database()
     
     else:
         await ctx.send("HAHAHAHAHA tu n'as pas ce pouvoir")
