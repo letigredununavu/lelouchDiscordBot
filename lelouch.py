@@ -141,7 +141,7 @@ async def play(ctx, *, letter):
 
             else:
 
-                message += "Nope."
+                message += "Nope.\n"
                 #await ctx.send("Nope.")
 
                 # Get the points the remove to the user and remove them
@@ -151,8 +151,6 @@ async def play(ctx, *, letter):
                 game.lives -= 1
 
                 image = images[game.lives]
-
-                await ctx.send(file=discord.File(image))
 
                 # If they have lost
                 if game.lives <= 0:
