@@ -19,10 +19,13 @@ def add_users_in_leaderBoard(user, points = 0):
             cursor.execute(sql_query, (user, points))
             print("{} points added to new player {}".format(points, user))
 
-        # Commit the changes
-        connection.commit()
+            # Commit the changes
+            connection.commit()
 
-        print("modifs enregistrés")
+            print("modifs enregistrés")
+
+        else:
+            print("Le user existait déjà")
 
         cursor.close()
 
@@ -68,7 +71,7 @@ def add_points_to_user(user, points_to_add):
         connection.commit()
         cursor.close()
 
-    except expression as identifier:
+    except sqlite3.Error as error:
         print("error dans l'ajout des points")
 
     finally:
@@ -126,3 +129,4 @@ def clean_database():
         if (connection):
             connection.close()
             print("connection fini")
+            
