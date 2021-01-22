@@ -17,6 +17,7 @@ def add_users_in_leaderBoard(user, points = 0):
             # Create the query command pass it to the cursor with the user argument and initial 0 points
             sql_query = "insert into scores values (?,?)"
             cursor.execute(sql_query, (user, points))
+            print("{} points added to new player {}".format(points, user))
 
         # Commit the changes
         connection.commit()
@@ -56,6 +57,7 @@ def add_points_to_user(user, points_to_add):
             print("new points = {}".format(new_points))
             sql_query = "update scores set points=? where name=?"
             cursor.execute(sql_query, (new_points, user))
+            print("{} points added to player {}".format(points_to_add, user))
         
         # If the player does not exist, create it
         else:

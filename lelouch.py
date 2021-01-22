@@ -11,6 +11,9 @@ client = commands.Bot(command_prefix = '>', help_command=None)
 mots = open("mots.txt", 'r', encoding='utf-8')
 mots = mots.read().split('\n')
 
+images = ['images/dead.png', 'images/live6.png', 'images/live5.png', 'images/live4.png',
+     'images/live3.png', 'images/live2.png', 'images/live1.png', 'images/live0.png']
+
 
 def get_image(lives):
     if lives == 7:
@@ -29,6 +32,7 @@ def get_image(lives):
         return 'images/live6.png'
     else:
         return 'images/dead.png'
+
 
 # The class that represent our game
 class Game():
@@ -276,4 +280,4 @@ async def clean_db(ctx):
         
 token = os.environ['BOT_TOKEN']
 
-client.run(token)
+#client.run("NzU0MTE2NzMyNDU2NjY1MjIw.X1wD7w.2qyqaM9myT5odhOgibKSfIX7TpI")
