@@ -88,7 +88,14 @@ def get_database():
         connection = sqlite3.connect('hangMan.db')
         cursor = connection.cursor()
         print("cursor connected")
+        
+        sql_query = "select name from sqlite_master where type='table' and name='scores' "
+        cursor.execute(sql_query)
 
+        # If the table does not exist, we create it
+        if not cursor.fetchone():
+            create_table('scores')
+        
         # Create the query command and execute it
         sql_query = "select * from scores order by points desc"
         cursor.execute(sql_query)
@@ -106,6 +113,30 @@ def get_database():
             print("connection fini")
 
         return database
+
+
+def create_table(name):
+    
+    try:
+        connection = sqlite3.connect('hangMan.db')
+        cursor = connection.cursor()
+        print("cursor connected")
+
+        sql_query = "create table {} (name text, points real)".format(name)
+
+        cursor.execute(sql_query)
+
+        connection.commit()
+
+        cursor.close()
+
+    except sqlite3.Error as error:
+        print("Erreur dans la création de la table")
+    
+    finally:
+        if (connection):
+            connection.close()
+            print("connection fini")
 
 
 # Function to erase all database
@@ -129,4 +160,3 @@ def clean_database():
         if (connection):
             connection.close()
             print("connection fini")
-            
