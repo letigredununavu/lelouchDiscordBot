@@ -272,3 +272,4 @@ async def clean_db(ctx):
         
 token = os.environ['BOT_TOKEN']
 client.run(token)
+
