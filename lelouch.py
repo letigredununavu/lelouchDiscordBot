@@ -154,9 +154,10 @@ async def play(ctx, *, letter):
                 # If they have lost
                 if game.lives <= 0:
                     message += "Vous avez perdu pétasses\nLe mot était: {}\n".format(game.mot)
-                    await ctx.send("Vous avez perdu pétasses\nLe mot était: {}\n".format(game.mot)
+                    await ctx.send("Vous avez perdu pétasses\nLe mot était: {}\n".format(game.mot))
 
                     game.start = False
+
                     return
 
             game.lettres_utilisees.append(letter)
