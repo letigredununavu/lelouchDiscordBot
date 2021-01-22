@@ -278,6 +278,7 @@ async def clean_db(ctx):
         await ctx.send("HAHAHAHAHA tu n'as pas ce pouvoir")
 
         
-token = os.environ['BOT_TOKEN']
+#token = os.environ['BOT_TOKEN']
+#client.run(token)
 
-#client.run("NzU0MTE2NzMyNDU2NjY1MjIw.X1wD7w.2qyqaM9myT5odhOgibKSfIX7TpI")
+client.run("NzU0MTE2NzMyNDU2NjY1MjIw.X1wD7w.2qyqaM9myT5odhOgibKSfIX7TpI")
