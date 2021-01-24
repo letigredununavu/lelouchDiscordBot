@@ -204,12 +204,12 @@ async def guess(ctx, *, word):
                 game.start = False
 
             else:
-                image = images[game.lives]
                 message += "No, better luck next time\n"
                 message += "mot: {}\n".format(''.join(game.mot_chiffrer))
                 message += "lettres utilisées: {}\n".format(game.lettres_utilisees)
                 message += "vies restantes: {}".format(game.lives)
-            
+
+            image = images[game.lives]
             await ctx.send(message, file=discord.File(image))
     
     else:
