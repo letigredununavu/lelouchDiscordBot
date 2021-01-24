@@ -9,6 +9,13 @@ def add_users_in_leaderBoard(user, points = 0):
         cursor = connection.cursor()
         print("cursor connected")
 
+        sql_query = "select name from sqlite_master where type='table' and name='scores' "
+        cursor.execute(sql_query)
+
+        # If the table does not exist, we create it
+        if not cursor.fetchone():
+            create_table('scores')
+
         # Verify that the user is not already in the database
         cursor.execute("select * from scores where name=?", (user,))
 
@@ -47,6 +54,13 @@ def add_points_to_user(user, points_to_add):
         connection = sqlite3.connect('hangMan.db')
         cursor = connection.cursor()
         print("cursor connected")
+
+        sql_query = "select name from sqlite_master where type='table' and name='scores' "
+        cursor.execute(sql_query)
+
+        # If the table does not exist, we create it
+        if not cursor.fetchone():
+            create_table('scores')
 
         # Create the query command and execute it with the cursor
         sql_query = "select * from scores where name=? "
@@ -146,6 +160,13 @@ def clean_database():
         connection = sqlite3.connect('hangMan.db')
         cursor = connection.cursor()
         print("cursor connected")
+
+        sql_query = "select name from sqlite_master where type='table' and name='scores' "
+        cursor.execute(sql_query)
+
+        # If the table does not exist, we create it
+        if not cursor.fetchone():
+            create_table('scores')
 
         sql_query = "delete from scores"
         cursor.execute(sql_query)

@@ -69,7 +69,7 @@ def get_minus_points_with_word():
 async def on_ready():
 
     print("We have logged in as {}".format(client))
-    await client.change_presence(activity=discord.Game(name='Hang Man'))
+    await client.change_presence(activity=discord.Game(name='Hang Man | >help'))
 
 
 # Command to start a new game
@@ -176,41 +176,44 @@ async def play(ctx, *, letter):
 @client.command()
 async def guess(ctx, *, word):
 
-    user = ctx.author.name
-    
-    # If the guess is correct add the points
-    if word.lower() == game.mot:
-        await ctx.send("Bravooo! {}, le mot était bien: {}".format(user, game.mot))
+    # Si une partie est commencé
+    if game.start:
+        user = ctx.author.name
+        # If the guess is correct add the points
+        if word.lower() == game.mot:
+            await ctx.send("Bravooo! {}, le mot était bien: {}".format(user, game.mot))
 
-        points = get_adding_points_with_word()
-        db.add_points_to_user(user, points)
-
-        game.start = False
-    
-    # Else, remove points and a live
-    else:
-        message = ""
-
-        points = get_minus_points_with_word()
-        db.add_points_to_user(user, points)
-
-        game.lives -= 1
-
-        # If they have lost
-        if game.lives <= 0:
-            message += "Vous avez perdu pétasses\nLe mot était: {}\n".format(game.mot)
+            points = get_adding_points_with_word()
+            db.add_points_to_user(user, points)
 
             game.start = False
-
+        
+        # Else, remove points and a live
         else:
-            image = images[game.lives]
-            message += "No, better luck next time\n"
-            message += "mot: {}\n".format(''.join(game.mot_chiffrer))
-            message += "lettres utilisées: {}\n".format(game.lettres_utilisees)
-            message += "vies restantes: {}".format(game.lives)
-        
-        await ctx.send(message, file=discord.File(image))
-        
+            message = ""
+
+            points = get_minus_points_with_word()
+            db.add_points_to_user(user, points)
+
+            game.lives -= 1
+
+            # If they have lost
+            if game.lives <= 0:
+                message += "Vous avez perdu pétasses\nLe mot était: {}\n".format(game.mot)
+
+                game.start = False
+
+            else:
+                image = images[game.lives]
+                message += "No, better luck next time\n"
+                message += "mot: {}\n".format(''.join(game.mot_chiffrer))
+                message += "lettres utilisées: {}\n".format(game.lettres_utilisees)
+                message += "vies restantes: {}".format(game.lives)
+            
+            await ctx.send(message, file=discord.File(image))
+    
+    else:
+        await ctx.send("Aucun partie n'est commencée")
         
 
 
@@ -268,6 +271,6 @@ async def clean_db(ctx):
         await ctx.send("HAHAHAHAHA tu n'as pas ce pouvoir")
 
         
-token = os.environ['BOT_TOKEN']
-client.run(token)
-
+#token = os.environ['BOT_TOKEN']
+#client.run(token)
+client.run("NzU0MTE2NzMyNDU2NjY1MjIw.X1wD7w.2qyqaM9myT5odhOgibKSfIX7TpI")
