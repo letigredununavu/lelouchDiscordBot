@@ -274,7 +274,7 @@ async def leaderboard(ctx):
         message = ""
         
         for i in range(len(database)):
-            message += "{} : {} avec {} points\n".format(i+1, database[i][0], database[i][1])
+            message += "{} : {}\n".format(i+1, database[i])
         
         if message:
             await ctx.send(message)
@@ -308,5 +308,5 @@ async def data(ctx):
 
 
         
-token = os.environ['BOT_TOKEN']
-client.run(token)
+#token = os.environ['BOT_TOKEN']
+client.run('NzU0MTE2NzMyNDU2NjY1MjIw.X1wD7w.2qyqaM9myT5odhOgibKSfIX7TpI')

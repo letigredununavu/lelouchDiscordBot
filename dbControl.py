@@ -1,7 +1,7 @@
 from user import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy.sql.expression import select
+from sqlalchemy.sql.expression import desc, select
 import stats
 
 
@@ -62,7 +62,7 @@ def get_database():
 
     session = Session()
 
-    users = session.query(User).all()
+    users = session.query(User).order_by(desc(User.points)).all()
 
     session.close()
 

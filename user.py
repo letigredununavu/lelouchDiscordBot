@@ -80,4 +80,4 @@ class User(Base):
                 'o':0,'p':0,'q':0,'r':0,'s':0,'t':0,'u':0,'v':0,'w':0,'x':0,'y':0,'z':0,'é':0,'è':0,'ê':0}
 
     def __repr__(self) -> str:
-        return "Player: {} with {} points, {} games won and {} games played".format(self.name, self.points, self.games_won, self.games_played)
+        return "{} with {} points, {} games won and {} games played".format(self.name, self.points, self.games_won, self.games_played)
