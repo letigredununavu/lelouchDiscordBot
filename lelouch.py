@@ -230,7 +230,6 @@ async def guess(ctx, *, word):
                 message += "mot: {}\n".format(''.join(game.mot_chiffrer))
                 message += "lettres utilisées: {}\n".format(game.lettres_utilisees)
                 message += "vies restantes: {}".format(game.lives)
-            
             image = images[game.lives]
             await ctx.send(message, file=discord.File(image))
     
@@ -293,7 +292,6 @@ async def clear_db(ctx):
     
     else:
         await ctx.send("HAHAHAHAHA tu n'as pas ce pouvoir")
-
 
 @client.command()
 async def test_alp(ctx):
