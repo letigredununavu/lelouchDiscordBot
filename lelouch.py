@@ -294,18 +294,6 @@ async def clear_db(ctx):
         await ctx.send("HAHAHAHAHA tu n'as pas ce pouvoir")
 
 @client.command()
-async def test_alp(ctx):
-    db.add_alphabet("scores")
-
-    database = db.get_database()
-
-    names = [i[0] for i in infos]
-    values = database[0]
-    message = "{}, {}".format(names, values)
-    await ctx.send(message) 
-
-
-@client.command()
 async def data(ctx):
     user = ctx.author.name
     db.create_graphs(user)
