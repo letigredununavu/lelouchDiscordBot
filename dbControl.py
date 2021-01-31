@@ -1,183 +1,266 @@
-import sqlite3
-
-# Function to add a user to the database
-def add_users_in_leaderBoard(user, points = 0):
-
-    try:
-        # Connect to database
-        connection = sqlite3.connect('hangMan.db')
-        cursor = connection.cursor()
-        print("cursor connected")
-
-        sql_query = "select name from sqlite_master where type='table' and name='scores' "
-        cursor.execute(sql_query)
-
-        # If the table does not exist, we create it
-        if not cursor.fetchone():
-            create_table('scores')
-
-        # Verify that the user is not already in the database
-        cursor.execute("select * from scores where name=?", (user,))
-
-        if not cursor.fetchone():
-        
-            # Create the query command pass it to the cursor with the user argument and initial 0 points
-            sql_query = "insert into scores values (?,?)"
-            cursor.execute(sql_query, (user, points))
-            print("{} points added to new player {}".format(points, user))
-
-            # Commit the changes
-            connection.commit()
-
-            print("modifs enregistrés")
-
-        else:
-            print("Le user existait déjà")
-
-        cursor.close()
-
-    except sqlite3.Error as error:
-        print("error dans l'ajout")
-
-    # Close the connection
-    finally:
-        if (connection):
-            connection.close()
-            print("connection fini")
+from matplotlib import use
+from user import *
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.sql.expression import select
+import stats
 
 
-# Function to add points to a user
-def add_points_to_user(user, points_to_add):
+def add_user(username, points):
 
-    try:
-        # Connect to the database
-        connection = sqlite3.connect('hangMan.db')
-        cursor = connection.cursor()
-        print("cursor connected")
+    engine = create_engine('sqlite:///HangMan.db', echo=False)
 
-        sql_query = "select name from sqlite_master where type='table' and name='scores' "
-        cursor.execute(sql_query)
+    Base.metadata.create_all(bind=engine)
+    
 
-        # If the table does not exist, we create it
-        if not cursor.fetchone():
-            create_table('scores')
+    Session = sessionmaker(bind=engine)
 
-        # Create the query command and execute it with the cursor
-        sql_query = "select * from scores where name=? "
-        cursor.execute(sql_query, (user,))
+    session = Session()
 
-        player = cursor.fetchone()
+    user = session.query(User).filter_by(name = username).first()
+    print(user)
+    if not user:
+        user = User(username, points)
+        print(user)
+        session.add(user)
+        session.commit()
+        print("\n\nuser added ({})\n\n".format(user))
+    else:
+        print("user existait déjà")
 
-        # Verify that the player exist
-        if player:
-            new_points = player[1] + points_to_add
-            print("new points = {}".format(new_points))
-            sql_query = "update scores set points=? where name=?"
-            cursor.execute(sql_query, (new_points, user))
-            print("{} points added to player {}".format(points_to_add, user))
-        
-        # If the player does not exist, create it
-        else:
-            add_users_in_leaderBoard(user, points_to_add)
-            print("new player created with {} points".format(points_to_add))
+    session.close()
 
-        print("update successful")
-        connection.commit()
-        cursor.close()
+def add_points_to_user(username, points):
 
-    except sqlite3.Error as error:
-        print("error dans l'ajout des points")
+    engine = create_engine('sqlite:///HangMan.db', echo=False)
 
-    finally:
-        if (connection):
-            connection.close()
-            print("connection fini")
+    Base.metadata.create_all(bind=engine)
+
+    Session = sessionmaker(bind=engine)
+
+    session = Session()
+
+    if not session.query(User).filter_by(name=username).first():
+        add_user(username, 0)
+
+    user = session.query(User).filter_by(name = username).first()
+    print(user)
+
+    user.points += points
+
+    print("points ajouté a l'user {}".format(user.name))
+    session.commit()
+
+    session.close()
 
 
-# Function to get the entire database
 def get_database():
+    engine = create_engine('sqlite:///HangMan.db', echo=False)
 
-    try:
-        # Connect to database
-        connection = sqlite3.connect('hangMan.db')
-        cursor = connection.cursor()
-        print("cursor connected")
-        
-        sql_query = "select name from sqlite_master where type='table' and name='scores' "
-        cursor.execute(sql_query)
+    Base.metadata.create_all(bind=engine)
 
-        # If the table does not exist, we create it
-        if not cursor.fetchone():
-            create_table('scores')
-        
-        # Create the query command and execute it
-        sql_query = "select * from scores order by points desc"
-        cursor.execute(sql_query)
+    Session = sessionmaker(bind=engine)
 
-        database = cursor.fetchall()
+    session = Session()
 
-        cursor.close()
+    users = session.query(User).all()
 
-    except sqlite3.Error as error:
-        print("error dans le show_data")
+    session.close()
 
-    finally:
-        if (connection):
-            connection.close()
-            print("connection fini")
+    return users
 
-        return database
+def clear_database():
+    engine = create_engine('sqlite:///HangMan.db', echo=False)
 
+    Base.metadata.create_all(bind=engine)
 
-def create_table(name):
-    
-    try:
-        connection = sqlite3.connect('hangMan.db')
-        cursor = connection.cursor()
-        print("cursor connected")
+    Session = sessionmaker(bind=engine)
 
-        sql_query = "create table {} (name text, points real)".format(name)
+    session = Session()
 
-        cursor.execute(sql_query)
+    users = session.query(User).all()
+    for user in users:
+        session.delete(user)
 
-        connection.commit()
+    session.commit()
 
-        cursor.close()
-
-    except sqlite3.Error as error:
-        print("Erreur dans la création de la table")
-    
-    finally:
-        if (connection):
-            connection.close()
-            print("connection fini")
+    session.close()
+    print("database cleaner")
 
 
-# Function to erase all database
-def clean_database():
+def get_user_data(username):
+    engine = create_engine('sqlite:///HangMan.db', echo=False)
 
-    try:
-        connection = sqlite3.connect('hangMan.db')
-        cursor = connection.cursor()
-        print("cursor connected")
+    Base.metadata.create_all(bind=engine)
 
-        sql_query = "select name from sqlite_master where type='table' and name='scores' "
-        cursor.execute(sql_query)
+    Session = sessionmaker(bind=engine)
 
-        # If the table does not exist, we create it
-        if not cursor.fetchone():
-            create_table('scores')
+    session = Session()
 
-        sql_query = "delete from scores"
-        cursor.execute(sql_query)
-        connection.commit()
+    if not session.query(User).filter_by(name=username).first():
+        add_user(username, 0)
 
-        cursor.close()
+    user = session.query(User).filter_by(name=username).first()
 
-    except sqlite3.Error as error:
-        print("erreur dans la suppresion de la db")
+    session.close()
 
-    finally:
-        if (connection):
-            connection.close()
-            print("connection fini")
+    return user
+
+
+def add_letter_occurence(username, letter):
+    engine = create_engine('sqlite:///HangMan.db', echo=False)
+
+    Base.metadata.create_all(bind=engine)
+
+    Session = sessionmaker(bind=engine)
+
+    session = Session()
+
+    if not session.query(User).filter_by(name=username).first():
+        add_user(username, 0)
+
+    user = session.query(User).filter_by(name=username).first()
+
+    user.letters[letter] += 1
+    print(user.letters)
+
+    session.commit()
+    print("lettre {} ajouté à l'user {}".format(letter, username))
+
+    session.close()
+
+
+def add_win_to_player(username):
+    engine = create_engine('sqlite:///HangMan.db', echo=False)
+
+    Base.metadata.create_all(bind=engine)
+
+    Session = sessionmaker(bind=engine)
+
+    session = Session()
+
+    if not session.query(User).filter_by(name=username).first():
+        add_user(username, 0)
+
+    user = session.query(User).filter_by(name=username).first()
+
+    user.games_won += 1
+
+    session.commit()
+    print("victoire ajouté à l'user {}".format(username))
+
+    session.close()
+
+
+def add_game_to_player(username):
+    engine = create_engine('sqlite:///HangMan.db', echo=False)
+
+    Base.metadata.create_all(bind=engine)
+
+    Session = sessionmaker(bind=engine)
+
+    session = Session()
+
+    if not session.query(User).filter_by(name=username).first():
+        add_user(username, 0)
+
+    user = session.query(User).filter_by(name=username).first()
+
+    user.games_played += 1
+
+    session.commit()
+    print("1 partie jouée ajouté à l'user {}".format(username))
+    print(user.letters.keys())
+
+    session.close()
+
+
+def add_guessed_letters_to_player(username, letter):
+    engine = create_engine('sqlite:///HangMan.db', echo=False)
+
+    Base.metadata.create_all(bind=engine)
+
+    Session = sessionmaker(bind=engine)
+
+    session = Session()
+
+    if not session.query(User).filter_by(name=username).first():
+        add_user(username, 0)
+
+    user = session.query(User).filter_by(name=username).first()
+
+    user.guessed_letters += 1
+    user.total_letters += 1
+    user.letters[letter] += 1
+
+    session.commit()
+    print("Une lettre de plus de devinée pour l'utilisateur {}".format(username))
+    print(user.guessed_letters)
+
+    session.close()
+
+
+def add_total_letters(username, letter):
+    engine = create_engine('sqlite:///HangMan.db', echo=False)
+
+    Base.metadata.create_all(bind=engine)
+
+    Session = sessionmaker(bind=engine)
+
+    session = Session()
+
+    if not session.query(User).filter_by(name=username).first():
+        add_user(username, 0)
+
+    user = session.query(User).filter_by(name=username).first()
+
+    user.total_letters += 1
+    user.letters[letter] += 1
+
+    session.commit()
+    print("Une lettre de plus pour l'utilisateur {}".format(username))
+    print(user.guessed_letters)
+
+    session.close()
+
+
+def create_graphs(username):
+    user = get_user_data(username)
+
+    alphabet = [i for i in user.letters.keys()]
+
+    alphabet_values = [i for i in user.letters.values()]
+
+    games_played = user.games_played
+
+    games_won = user.games_won
+
+    good_guessed_letters = user.guessed_letters
+
+    nbr_of_guessed_letters = user.total_letters
+
+    print(alphabet)
+    print(alphabet_values)
+
+    stats.create_graph_as_png(alphabet, alphabet_values, games_played, 
+        games_won, good_guessed_letters, nbr_of_guessed_letters, user)
+
+
+
+
+
+if __name__ == '__main__':
+    add_user('even', 100)
+    add_points_to_user('even', 100)
+    users = get_database()
+    for user in users:
+        print(user)
+    clear_database()
+    add_user('antoine',12)
+    users = get_database()
+    for user in users:
+        print(user)
+    add_letter_occurence('antoine', 'é')
+    add_game_to_player('antoine')
+    add_guessed_letters_to_player('antoine','v')
+    create_graphs('antoine')
