@@ -24,6 +24,7 @@ class Game():
         self.lettres_utilisees = lettres_utilisees
         self.mot_chiffrer = ['-' for i in range(len(self.mot))]
         self.lives = lives
+        self.players = []
     
     # function to create a new game
     def new_game(self, mot):
@@ -32,6 +33,7 @@ class Game():
         self.start = True
         self.lettres_utilisees = []
         self.mot_chiffrer = ['-' for i in range(len(self.mot))]
+        self.players = []
 
 
 game = Game()
@@ -85,6 +87,12 @@ async def start(ctx):
 
     image = images[game.lives]
 
+    user = ctx.author.name
+
+    # On ajoute une game à l'user qui a start la game
+    game.players.append(user)
+
+    db.add_game_to_player(user)
 
     await ctx.send(message, file=discord.File(image))
     #await ctx.send()
@@ -96,6 +104,12 @@ async def play(ctx, *, letter):
 
     # If a game is started
     if game.start:
+        user = ctx.author.name
+
+        # Add a game to the user if he just joined
+        if not user in game.players:
+            game.players.append(user)
+            db.add_game_to_player(user)
 
         # Format the input to lowercase
         letter = letter.lower()
@@ -110,12 +124,15 @@ async def play(ctx, *, letter):
         
         else:
             message = ""
-            user = ctx.author.name
+            
 
             # If the letter is in the word
             if letter in game.mot:
                 message += "Houuu congrats {}\n".format(user)
                 #await ctx.send("Houuu congrats biatch")
+
+                # Add the letter to guessed_letters
+                db.add_guessed_letters_to_player(user, letter)
 
                 # Get the points to add to the user and adding them
                 points = get_adding_points_with_letter()
@@ -143,6 +160,9 @@ async def play(ctx, *, letter):
 
                 message += "Nope.\n"
                 #await ctx.send("Nope.")
+
+                # Add a letter to total letters of the user
+                db.add_total_letters(user, letter)
 
                 # Get the points the remove to the user and remove them
                 points = get_minus_points_with_letter()
@@ -183,6 +203,9 @@ async def guess(ctx, *, word):
         if word.lower() == game.mot:
             await ctx.send("Bravooo! {}, le mot était bien: {}".format(user, game.mot))
 
+            # Add a win to user
+            db.add_win_to_player(user)
+
             points = get_adding_points_with_word()
             db.add_points_to_user(user, points)
 
@@ -200,16 +223,15 @@ async def guess(ctx, *, word):
             # If they have lost
             if game.lives <= 0:
                 message += "Vous avez perdu pétasses\nLe mot était: {}\n".format(game.mot)
-
                 game.start = False
 
             else:
-                image = images[game.lives]
                 message += "No, better luck next time\n"
                 message += "mot: {}\n".format(''.join(game.mot_chiffrer))
                 message += "lettres utilisées: {}\n".format(game.lettres_utilisees)
                 message += "vies restantes: {}".format(game.lives)
             
+            image = images[game.lives]
             await ctx.send(message, file=discord.File(image))
     
     else:
@@ -230,7 +252,9 @@ async def help(ctx):
     message += "Catégorie leaderboard: \n\n"
     message += ">leaderboard pour voir le leaderboard\n"
     message += ">clean_db pour effacer la base de données\n"
-    message += ">add_user pour ajouter votre username au leaderboard, vous pouvez aussi juste jouer\n\n```\n"
+    message += ">add_user pour ajouter votre username au leaderboard, vous pouvez aussi juste jouer\n\n"
+    message += "Catégorie data:\n\n"
+    message += ">data pour voir une image de votre data\n\n```\n"
 
     await ctx.send(message)
 
@@ -261,15 +285,43 @@ async def leaderboard(ctx):
 
 # Command to clean the database
 @client.command()
-async def clean_db(ctx):
+async def clear_db(ctx):
 
     if ctx.author.name == 'tonythelion':
+        db.clear_database()
         await ctx.send("Database cleané")
-        db.clean_database()
     
     else:
         await ctx.send("HAHAHAHAHA tu n'as pas ce pouvoir")
 
+
+@client.command()
+async def test_alp(ctx):
+    db.add_alphabet("scores")
+
+    database = db.get_database()
+
+    names = [i[0] for i in infos]
+    values = database[0]
+    message = "{}, {}".format(names, values)
+    await ctx.send(message) 
+
+
+@client.command()
+async def data(ctx):
+    user = ctx.author.name
+    db.create_graphs(user)
+
+    try:
+        image = "{}_graph_image.png".format(user)
+        await ctx.send(file=discord.File(image))
+
+    except IOError:
+        print("IO error")
+        await ctx.send("probleme avec le fichier image")
+
+
         
-token = os.environ['BOT_TOKEN']
-client.run(token)
+#token = os.environ['BOT_TOKEN']
+#client.run(token)
+client.run("NzU0MTE2NzMyNDU2NjY1MjIw.X1wD7w.2qyqaM9myT5odhOgibKSfIX7TpI")
