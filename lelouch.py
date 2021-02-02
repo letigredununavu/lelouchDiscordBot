@@ -302,5 +302,5 @@ async def data(ctx):
 
 
 # run the bot
-#token = os.environ['BOT_TOKEN']
-client.run('NzU0MTE2NzMyNDU2NjY1MjIw.X1wD7w.2qyqaM9myT5odhOgibKSfIX7TpI')
+token = os.environ['BOT_TOKEN']
+client.run(token)
