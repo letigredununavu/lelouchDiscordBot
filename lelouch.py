@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 import os
 import random
-import sqlite3
 import dbControl as db
 
 client = commands.Bot(command_prefix = '>', help_command=None)
@@ -18,21 +17,12 @@ images = ['images/dead.png', 'images/live6.png', 'images/live5.png', 'images/liv
 # The class that represent our game
 class Game():
 
-    def __init__(self, mot = "giraffe", start = False, lettres_utilisees = [], lives = 7):
+    def __init__(self, mot = "giraffe", start = True, lettres_utilisees = [], lives = 7):
         self.mot = mot
         self.start = start
         self.lettres_utilisees = lettres_utilisees
         self.mot_chiffrer = ['-' for i in range(len(self.mot))]
         self.lives = lives
-        self.players = []
-    
-    # function to create a new game
-    def new_game(self, mot):
-        self.mot = mot
-        self.lives = 7
-        self.start = True
-        self.lettres_utilisees = []
-        self.mot_chiffrer = ['-' for i in range(len(self.mot))]
         self.players = []
 
 
@@ -81,7 +71,9 @@ async def start(ctx):
     message = ""
     message += "game starting\n"
 
-    game.new_game(mots[random.randrange(len(mots))])
+    mot = mots[random.randrange(len(mots))]
+
+    game = Game(mot)
 
     message += "Le mot: {}".format(''.join(game.mot_chiffrer))
 
@@ -293,6 +285,8 @@ async def clear_db(ctx):
     else:
         await ctx.send("HAHAHAHAHA tu n'as pas ce pouvoir")
 
+
+# Command to visualize your data
 @client.command()
 async def data(ctx):
     user = ctx.author.name
@@ -307,6 +301,6 @@ async def data(ctx):
         await ctx.send("probleme avec le fichier image")
 
 
-        
-token = os.environ['BOT_TOKEN']
-client.run(token)
+# run the bot
+#token = os.environ['BOT_TOKEN']
+client.run('NzU0MTE2NzMyNDU2NjY1MjIw.X1wD7w.2qyqaM9myT5odhOgibKSfIX7TpI')

@@ -1,10 +1,13 @@
 from user import *
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy.sql.expression import desc, select
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql.expression import desc
 import stats
 
+# Fichier qui controle tous les accès et modifications à la base de données
 
+
+# Ajoute un user du nom 'username' avec 'points' points dans la db 
 def add_user(username, points):
 
     engine = create_engine('sqlite:///HangMan.db', echo=False)
@@ -17,7 +20,8 @@ def add_user(username, points):
     session = Session()
 
     user = session.query(User).filter_by(name = username).first()
-    print(user)
+
+    # Vérifie que l'user n'existe pas déjà
     if not user:
         user = User(username, points)
         print(user)
@@ -29,6 +33,8 @@ def add_user(username, points):
 
     session.close()
 
+
+# Ajoute 'points' points au jouer 'username'
 def add_points_to_user(username, points):
 
     engine = create_engine('sqlite:///HangMan.db', echo=False)
@@ -39,6 +45,7 @@ def add_points_to_user(username, points):
 
     session = Session()
 
+    # Si le joueur existait pas, on le crée
     if not session.query(User).filter_by(name=username).first():
         add_user(username, 0)
 
@@ -53,6 +60,7 @@ def add_points_to_user(username, points):
     session.close()
 
 
+# Retourne tous les joueurs dans la db
 def get_database():
     engine = create_engine('sqlite:///HangMan.db', echo=False)
 
@@ -68,6 +76,8 @@ def get_database():
 
     return users
 
+
+# Efface tous les joueurs de la db
 def clear_database():
     engine = create_engine('sqlite:///HangMan.db', echo=False)
 
@@ -87,6 +97,7 @@ def clear_database():
     print("database cleaner")
 
 
+# Retourne les data du joueur 'username'
 def get_user_data(username):
     engine = create_engine('sqlite:///HangMan.db', echo=False)
 
@@ -106,6 +117,7 @@ def get_user_data(username):
     return user
 
 
+# Ajoute une occurence de la lettre 'letter' au joueur 'username'
 def add_letter_occurence(username, letter):
     engine = create_engine('sqlite:///HangMan.db', echo=False)
 
@@ -115,13 +127,13 @@ def add_letter_occurence(username, letter):
 
     session = Session()
 
+    # Vérification que le joueur existe
     if not session.query(User).filter_by(name=username).first():
         add_user(username, 0)
 
     user = session.query(User).filter_by(name=username).first()
 
     user.letters[letter] += 1
-    print(user.letters)
 
     session.commit()
     print("lettre {} ajouté à l'user {}".format(letter, username))
@@ -129,6 +141,7 @@ def add_letter_occurence(username, letter):
     session.close()
 
 
+# Ajoute une victoire au joueur 'username'
 def add_win_to_player(username):
     engine = create_engine('sqlite:///HangMan.db', echo=False)
 
@@ -138,6 +151,7 @@ def add_win_to_player(username):
 
     session = Session()
 
+    # Vérification que le joueur existe
     if not session.query(User).filter_by(name=username).first():
         add_user(username, 0)
 
@@ -151,6 +165,7 @@ def add_win_to_player(username):
     session.close()
 
 
+# Ajoute une partie au joueur 'username'
 def add_game_to_player(username):
     engine = create_engine('sqlite:///HangMan.db', echo=False)
 
@@ -160,6 +175,7 @@ def add_game_to_player(username):
 
     session = Session()
 
+    # Vérification que le joueur existe
     if not session.query(User).filter_by(name=username).first():
         add_user(username, 0)
 
@@ -169,11 +185,11 @@ def add_game_to_player(username):
 
     session.commit()
     print("1 partie jouée ajouté à l'user {}".format(username))
-    print(user.letters.keys())
 
     session.close()
 
 
+# Ajoute une lettre bien deviné au joueur 'username'
 def add_guessed_letters_to_player(username, letter):
     engine = create_engine('sqlite:///HangMan.db', echo=False)
 
@@ -183,6 +199,7 @@ def add_guessed_letters_to_player(username, letter):
 
     session = Session()
 
+    # Vérification que le joueur existe
     if not session.query(User).filter_by(name=username).first():
         add_user(username, 0)
 
@@ -194,11 +211,11 @@ def add_guessed_letters_to_player(username, letter):
 
     session.commit()
     print("Une lettre de plus de devinée pour l'utilisateur {}".format(username))
-    print(user.guessed_letters)
 
     session.close()
 
 
+# incrémente le nombre de lettres guessed par le joueur 'username'
 def add_total_letters(username, letter):
     engine = create_engine('sqlite:///HangMan.db', echo=False)
 
@@ -208,6 +225,7 @@ def add_total_letters(username, letter):
 
     session = Session()
 
+    # Vérification que le joueur existe
     if not session.query(User).filter_by(name=username).first():
         add_user(username, 0)
 
@@ -218,11 +236,11 @@ def add_total_letters(username, letter):
 
     session.commit()
     print("Une lettre de plus pour l'utilisateur {}".format(username))
-    print(user.guessed_letters)
 
     session.close()
 
 
+# Crée l'image des graphique avec les data de 'username'
 def create_graphs(username):
     user = get_user_data(username)
 
@@ -238,13 +256,8 @@ def create_graphs(username):
 
     nbr_of_guessed_letters = user.total_letters
 
-    print(alphabet)
-    print(alphabet_values)
-
     stats.create_graph_as_png(alphabet, alphabet_values, games_played, 
         games_won, good_guessed_letters, nbr_of_guessed_letters, user)
-
-
 
 
 

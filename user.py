@@ -5,6 +5,8 @@ from sqlalchemy.types import TypeDecorator, VARCHAR
 from sqlalchemy.ext.mutable import Mutable
 
 
+# Classe prit de la doc de sqlalchemy pour 
+# faire un objet dict personnalisé qu'on peut mettre dans la db
 class JSONEncodedDict(TypeDecorator):
     "Represents an immutable structure as a json-encoded string."
 
@@ -21,6 +23,8 @@ class JSONEncodedDict(TypeDecorator):
         return value
 
 
+# Classe prit de la doc de slqalchemy pour que l'on
+# puisse modifié notre object dict et que la db le prenne en compte
 class MutableDict(Mutable, dict):
     @classmethod
     def coerce(cls, key, value):
@@ -50,6 +54,8 @@ class MutableDict(Mutable, dict):
 
 Base = declarative_base()
 
+
+# Classe pour les users
 class User(Base):
     __tablename__ = "users"
 
