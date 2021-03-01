@@ -73,7 +73,11 @@ async def start(ctx):
 
     mot = mots[random.randrange(len(mots))]
 
-    game = Game(mot)
+    game.mot = mot
+    game.start = True
+    game.lettres_utilisees = []
+    game.mot_chiffrer = ['-' for i in range(len(game.mot))]
+    game.lives = 7
 
     message += "Le mot: {}".format(''.join(game.mot_chiffrer))
 
