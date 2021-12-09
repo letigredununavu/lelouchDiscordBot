@@ -4,7 +4,7 @@ import os
 import random
 import dbControl as db
 
-client = commands.Bot(command_prefix = '>', help_command=None)
+client = commands.Bot(command_prefix = '?', help_command=None)
 
 # Formatting the words bank
 mots = open("mots.txt", 'r', encoding='utf-8')
