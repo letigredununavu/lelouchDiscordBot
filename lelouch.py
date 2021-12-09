@@ -61,7 +61,7 @@ def get_minus_points_with_word():
 async def on_ready():
 
     print("We have logged in as {}".format(client))
-    await client.change_presence(activity=discord.Game(name='Hang Man | >help'))
+    await client.change_presence(activity=discord.Game(name='Hang Man | ?help'))
 
 
 # Command to start a new game
@@ -239,17 +239,17 @@ async def guess(ctx, *, word):
 async def help(ctx):
 
     message = "```\nCommandes du bots:\n\n"
-    message += ">help pour voir les commandes du bots\n\n"
+    message += "?help pour voir les commandes du bots\n\n"
     message += "Catégorie partie: \n\n"
-    message += ">start pour commencer une partie\n"
-    message += ">guess _(le mot) pour guess le mot au complet (!Attention, ca donne plus de points, mais en enlève plus aussi!)\n"
-    message += ">play _(une lettre de l'alphabet) pour jouer une lettre, pas de symboles spéciaux (-, , ')\n\n"
+    message += "?start pour commencer une partie\n"
+    message += "?guess _(le mot) pour guess le mot au complet (!Attention, ca donne plus de points, mais en enlève plus aussi!)\n"
+    message += "?play _(une lettre de l'alphabet) pour jouer une lettre, pas de symboles spéciaux (-, , ')\n\n"
     message += "Catégorie leaderboard: \n\n"
-    message += ">leaderboard pour voir le leaderboard\n"
-    message += ">clean_db pour effacer la base de données\n"
-    message += ">add_user pour ajouter votre username au leaderboard, vous pouvez aussi juste jouer\n\n"
+    message += "?leaderboard pour voir le leaderboard\n"
+    message += "?clean_db pour effacer la base de données\n"
+    message += "?add_user pour ajouter votre username au leaderboard, vous pouvez aussi juste jouer\n\n"
     message += "Catégorie data:\n\n"
-    message += ">data pour voir une image de votre data\n\n```\n"
+    message += "?data pour voir une image de votre data\n\n```\n"
 
     await ctx.send(message)
 
