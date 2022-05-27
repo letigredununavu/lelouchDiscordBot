@@ -15,4 +15,4 @@ Add more data and vizualisation to players
 
 Add new words
 
-Cleaner the code a bit
+Clean the code a bit
